@@ -11,7 +11,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -23,6 +23,7 @@ import java.util.List;
 public class RapidScanPlugin
     extends AbstractMojo
 {
+    @Override
     public void execute()
         throws MojoExecutionException
     {
