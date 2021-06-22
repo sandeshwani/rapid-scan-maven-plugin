@@ -9,6 +9,10 @@
 
   <name>Rapid Scan Maven Plugin</name>
 
+  <scm>
+    <url>https://svn.apache.org/viewvc/maven</url>
+  </scm>
+
   <build>
     <plugins>
       <plugin>
