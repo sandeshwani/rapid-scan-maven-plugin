@@ -1,0 +1,48 @@
+# Output directories
+target/
+
+# Mac OS X files
+.DS_Store
+
+# IntelliJ IDEA files
+.idea/
+
+# VS Code
+.vscode
+.history
+
+# Eclipse files
+.settings
+.classpath
+.project
+
+# Log directory
+logs/
+csvs/
+*.log
+
+# vim files
+.*.sw[a-z]
+*.un~
+
+# Java class files
+*.class
+
+# Compiled object files
+*.o
+
+# Pericles plugins
+.codeformat
+.deps
+
+# Other Pericles Files
+shared-init.gradle
+clientJars
+checksums
+lint-override.properties
+repository.tar
+LOCK
+
+# Performance Test Results
+performance_test_results/
+Chart.lock
