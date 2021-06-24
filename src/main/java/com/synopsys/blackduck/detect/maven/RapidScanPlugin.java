@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Goal which runs Sysnopsys Detect, Rapid Scanning test
- *
- * @phase process-sources
  */
 @Mojo(name = "scan")
 public class RapidScanPlugin
