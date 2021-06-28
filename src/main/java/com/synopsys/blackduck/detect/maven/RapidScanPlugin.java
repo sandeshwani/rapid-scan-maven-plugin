@@ -50,27 +50,71 @@ public class RapidScanPlugin
             throw new MojoExecutionException("BLACKDUCK_API_TOKEN environment variable not defined");
         }
 
-        String curlCommand = "curl -s -L https://detect.synopsys.com/detect7.sh";
-        ProcessBuilder curlProcessBuilder = new ProcessBuilder(curlCommand.split(" "));
-
-        String bashCommand = "bash -s -- --detect.blackduck.scan.mode=RAPID"
-                + " --detect.tools=DETECTOR --detect.required.dectector.types=MAVEN"
-                + " --detect.bom.aggregate.name=aggregated.bdio";
-        ProcessBuilder bashProcessBuilder = new ProcessBuilder(bashCommand.split(" "));
+        String OS = System.getProperty("os.name");
+        boolean isWindows = OS.startsWith("Windows");
 
         try {
-            List<Process> processes =
+
+            List<Process> processes;
+
+            if (isWindows) {
+
+                String powerShellCommand = "powerShell \"[Net.ServicePointManager]::SecurityProtocol = 'tls12'";
+                ProcessBuilder powerShellProcessBuilder = new ProcessBuilder(powerShellCommand.split(" "));
+
+                powerShellProcessBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .redirectError(ProcessBuilder.Redirect.INHERIT)
+                    .start()
+                    .waitFor();
+
+                String irmCommand = "irm https://detect.synopsys.com/detect7.ps1?$(Get-Random)";
+                ProcessBuilder irmProcessBuilder = new ProcessBuilder(irmCommand.split(" "));
+
+                ProcessBuilder iexProcessBuilder = new ProcessBuilder("iex");
+
+                processes =
+                    ProcessBuilder.startPipeline(
+                            List.of(irmProcessBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
+                                            .redirectError(ProcessBuilder.Redirect.INHERIT),
+                                    iexProcessBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                                            .redirectError(ProcessBuilder.Redirect.INHERIT)));
+
+                for (Process process : processes) {
+                    process.waitFor();
+                }
+
+                ProcessBuilder detectProcessBuilder = new ProcessBuilder("detect");
+
+                detectProcessBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .redirectError(ProcessBuilder.Redirect.INHERIT)
+                    .start()
+                    .waitFor();
+
+            } else {
+
+                String curlCommand = "curl -s -L https://detect.synopsys.com/detect7.sh";
+                ProcessBuilder curlProcessBuilder = new ProcessBuilder(curlCommand.split(" "));
+
+                String bashCommand = "bash -s -- --detect.blackduck.scan.mode=RAPID"
+                        + " --detect.tools=DETECTOR --detect.required.dectector.types=MAVEN"
+                        + " --detect.bom.aggregate.name=aggregated.bdio";
+                ProcessBuilder bashProcessBuilder = new ProcessBuilder(bashCommand.split(" "));
+
+                processes =
                     ProcessBuilder.startPipeline(
                             List.of(curlProcessBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
-                                        .redirectError(ProcessBuilder.Redirect.INHERIT),
+                                            .redirectError(ProcessBuilder.Redirect.INHERIT),
                                     bashProcessBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                                         .redirectError(ProcessBuilder.Redirect.INHERIT)));
+                                            .redirectError(ProcessBuilder.Redirect.INHERIT)));
 
-            for (Process process : processes) {
-                process.waitFor();
+                for (Process process : processes) {
+                    process.waitFor();
+                }
             }
-        }
-        catch (IOException | InterruptedException e) {
+
+        } catch (IOException | InterruptedException e) {
             throw new MojoExecutionException("Error running Synopsys Detect", e);
         }
     }
