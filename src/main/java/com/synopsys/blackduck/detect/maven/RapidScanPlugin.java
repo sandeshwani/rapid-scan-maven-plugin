@@ -68,6 +68,7 @@ public class RapidScanPlugin
 
                 env.put("DETECT_BLACKDUCK_SCAN_MODE", "RAPID");
                 env.put("DETECT_TOOLS", "DETECTOR");
+                env.put("DETECT_REQUIRED_DETECTOR_TYPES", "MAVEN");
                 env.put("DETECT_BOM_AGGREGATE_NAME", "aggregated.bdio");
 
                 powerShellProcessBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
@@ -82,7 +83,7 @@ public class RapidScanPlugin
                 ProcessBuilder curlProcessBuilder = new ProcessBuilder(curlCommand.split(" "));
 
                 String bashCommand = "bash -s -- --detect.blackduck.scan.mode=RAPID"
-                        + " --detect.tools=DETECTOR --detect.required.dectector.types=MAVEN"
+                        + " --detect.tools=DETECTOR --detect.required.detector.types=MAVEN"
                         + " --detect.bom.aggregate.name=aggregated.bdio";
                 ProcessBuilder bashProcessBuilder = new ProcessBuilder(bashCommand.split(" "));
 
