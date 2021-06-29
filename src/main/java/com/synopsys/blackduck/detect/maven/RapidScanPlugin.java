@@ -26,6 +26,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Goal which runs Sysnopsys Detect, Rapid Scanning test
@@ -59,34 +60,17 @@ public class RapidScanPlugin
 
             if (isWindows) {
 
-                String powerShellCommand = "powerShell \"[Net.ServicePointManager]::SecurityProtocol = 'tls12'";
+                String powerShellCommand = "powerShell \"[Net.ServicePointManager]::SecurityProtocol = 'tls12';"
+                        + " irm https://detect.synopsys.com/detect7.ps1?$(Get-Random)"
+                        + " | iex; detect";
                 ProcessBuilder powerShellProcessBuilder = new ProcessBuilder(powerShellCommand.split(" "));
+                Map<String, String> env = powerShellProcessBuilder.environment();
+
+                env.put("DETECT_BLACKDUCK_SCAN_MODE", "RAPID");
+                env.put("DETECT_TOOLS", "DETECTOR");
+                env.put("DETECT_BOM_AGGREGATE_NAME", "aggregated.bdio");
 
                 powerShellProcessBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
-                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                    .redirectError(ProcessBuilder.Redirect.INHERIT)
-                    .start()
-                    .waitFor();
-
-                String irmCommand = "irm https://detect.synopsys.com/detect7.ps1?$(Get-Random)";
-                ProcessBuilder irmProcessBuilder = new ProcessBuilder(irmCommand.split(" "));
-
-                ProcessBuilder iexProcessBuilder = new ProcessBuilder("iex");
-
-                processes =
-                    ProcessBuilder.startPipeline(
-                            List.of(irmProcessBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
-                                            .redirectError(ProcessBuilder.Redirect.INHERIT),
-                                    iexProcessBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                                            .redirectError(ProcessBuilder.Redirect.INHERIT)));
-
-                for (Process process : processes) {
-                    process.waitFor();
-                }
-
-                ProcessBuilder detectProcessBuilder = new ProcessBuilder("detect");
-
-                detectProcessBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
                     .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                     .redirectError(ProcessBuilder.Redirect.INHERIT)
                     .start()
