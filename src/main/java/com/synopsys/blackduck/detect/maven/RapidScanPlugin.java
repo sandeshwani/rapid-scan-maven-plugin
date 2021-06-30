@@ -60,7 +60,7 @@ public class RapidScanPlugin
 
             if (isWindows) {
 
-                String powerShellCommand = "powerShell \"[Net.ServicePointManager]::SecurityProtocol = 'tls12';"
+                String powerShellCommand = "powerShell \"[Net.ServicePointManager]::SecurityProtocol = 'tls12';\""
                         + " irm https://detect.synopsys.com/detect7.ps1?$(Get-Random)"
                         + " | iex; detect";
                 ProcessBuilder powerShellProcessBuilder = new ProcessBuilder(powerShellCommand.split(" "));
