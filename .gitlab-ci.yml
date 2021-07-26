@@ -1,0 +1,77 @@
+#https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Maven.gitlab-ci.yml
+
+include:
+  project: releng/common-gitlab-ci
+  ref: master
+  file:
+    - pop-blackduck.yml
+    - maven-central.yml
+
+variables:
+  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+
+
+# Cache downloaded dependencies and plugins between builds.
+# To keep cache across branches add 'key: "$CI_JOB_NAME"'
+#Uncomment the below line when `-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository` is set in MAVEN_OPTS. Currently not possible due to limitation on how `.maven-central-publish-maven` job works
+#cache:
+#  paths:
+#    - .m2/repository
+
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: always
+
+.if-default-branch-only: &if-default-branch-only
+  if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+.if-schedule-default-branch-only: &if-schedule-default-branch-only
+  if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+stages:
+  - deploy
+  - pop
+
+deploy:
+  stage: deploy
+  image: releng/base-gitlab-runner:jdk11-python3.8-git
+  extends:
+    - .maven-central-publish-maven
+  variables:
+    MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+  rules:
+    - <<: *if-default-branch-only
+
+
+popBlackduckRapidscan:
+  extends: .popBlackduck_java
+  stage: deploy
+  allow_failure: true
+  variables:
+    JAVA_VER: '11'
+    DETECT_SCRIPT: 'detect7.sh'
+  rules:
+    - <<: *if-default-branch-only
+
+popSource:
+  extends: .popBlackduckSource
+  stage: pop
+  image: releng/base-gitlab-runner:jdk11-python3.8-git
+  variables:
+    #Some variables are missing which are inherited from the parent group in gitlab.
+    BLACKDUCK_PROJECT_NAME: Rapid-Scan-Maven-Plugin
+    DETECT_TRUST_CERT: 'true'
+    PROJECT_VERSION_PROPERTIES_FILE: pom.xml
+    PROJECT_VERSION_PROPERTY: version
+    DETECT_SCRIPT: 'detect7.sh'
+    BUILD_VERSION_TO_USE: ''
+  script:
+    - BUILD_VERSION_TO_USE=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tail -n 1)
+    - BUILD_VERSION_TO_USE=$(echo $BUILD_VERSION_TO_USE | sed 's/-SNAPSHOT//g')
+    - !reference [.popBlackduckSource, script]
+  rules:
+    - <<: *if-schedule-default-branch-only
