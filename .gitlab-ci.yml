@@ -29,7 +29,7 @@ stages:
   - deploy
   - pop
 
-.deploy:
+deploy:
   stage: deploy
   image: releng/base-gitlab-runner:jdk11-python3.8-git
   extends:
