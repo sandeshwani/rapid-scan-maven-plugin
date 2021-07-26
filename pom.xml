@@ -12,8 +12,14 @@
     <url>https://github.com/blackducksoftware/rapid-scan-maven-plugin</url>
     <developers>
         <developer>
-            <name>Change Me</name>
-            <email>changeme@synopsys.com</email>
+            <name>Steve Pitschke</name>
+            <email>pitschke@synopsys.com</email>
+            <organization>Synopsys</organization>
+            <organizationUrl>https://www.synopsys.com/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Sandesh Wani</name>
+            <email>sandeshw@synopsys.com</email>
             <organization>Synopsys</organization>
             <organizationUrl>https://www.synopsys.com/</organizationUrl>
         </developer>
