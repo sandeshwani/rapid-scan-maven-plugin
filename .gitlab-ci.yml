@@ -18,6 +18,13 @@ variables:
 #  paths:
 #    - .m2/repository
 
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: always
 
 .if-default-branch-only: &if-default-branch-only
   if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
