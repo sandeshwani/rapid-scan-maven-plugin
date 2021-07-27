@@ -12,7 +12,7 @@ Adding plugin to your project
         <plugins>
             ...
             <plugin>
-                <groupId>com.synopsys.blackduck</groupId>
+                <groupId>com.synopsys.blackducksoftware</groupId>
                 <artifactId>rapid-scan-maven-plugin</artifactId>
                 <version>1.0</version>
             </plugin>
