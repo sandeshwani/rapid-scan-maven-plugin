@@ -27,7 +27,7 @@ workflow:
     - when: always
 
 .if-default-branch-only: &if-default-branch-only
-  if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  if: '$CI_PIPELINE_SOURCE != "schedule" $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
 .if-schedule-default-branch-only: &if-schedule-default-branch-only
   if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
