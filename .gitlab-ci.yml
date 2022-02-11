@@ -68,7 +68,6 @@ popSource:
     PROJECT_VERSION_PROPERTIES_FILE: pom.xml
     PROJECT_VERSION_PROPERTY: version
     DETECT_SCRIPT: 'detect7.sh'
-    BUILD_VERSION_TO_USE: ''
     USE_NON_SNAPSHOT_NON_RC_VERSION: 'true'
   rules:
     - <<: *if-schedule-default-branch-only
