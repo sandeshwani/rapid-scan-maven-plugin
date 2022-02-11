@@ -69,9 +69,6 @@ popSource:
     PROJECT_VERSION_PROPERTY: version
     DETECT_SCRIPT: 'detect7.sh'
     BUILD_VERSION_TO_USE: ''
-  script:
-    - BUILD_VERSION_TO_USE=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tail -n 1)
-    - BUILD_VERSION_TO_USE=$(echo $BUILD_VERSION_TO_USE | sed 's/-SNAPSHOT//g')
-    - !reference [.popBlackduckSource, script]
+    USE_NON_SNAPSHOT_NON_RC_VERSION: 'true'
   rules:
     - <<: *if-schedule-default-branch-only
