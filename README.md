@@ -26,3 +26,7 @@ Executing a Rapid Scan
 ----------------------
 
     % mvn rapid-scan:scan
+
+Ignore the below readme
+----------------------
+This is a test
